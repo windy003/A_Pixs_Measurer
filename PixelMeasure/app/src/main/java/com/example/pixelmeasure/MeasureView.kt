@@ -17,14 +17,14 @@ class MeasureView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    // The main red line paint
+    // 主红色线条画笔
     private val linePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.RED
         strokeWidth = 4f
         style = Paint.Style.STROKE
     }
 
-    // Dashed guide line paint (lighter red)
+    // 虚线引导线画笔（浅红色）
     private val guidePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.argb(100, 255, 0, 0)
         strokeWidth = 2f
@@ -32,13 +32,13 @@ class MeasureView @JvmOverloads constructor(
         pathEffect = DashPathEffect(floatArrayOf(10f, 10f), 0f)
     }
 
-    // Endpoint dot paint
+    // 端点圆点画笔
     private val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.RED
         style = Paint.Style.FILL
     }
 
-    // Label text paint
+    // 标签文字画笔
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.RED
         textSize = 48f
@@ -46,20 +46,20 @@ class MeasureView @JvmOverloads constructor(
         isFakeBoldText = true
     }
 
-    // Background label paint
+    // 标签背景画笔
     private val textBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.argb(200, 255, 255, 255)
         style = Paint.Style.FILL
     }
 
-    // Arrow paint
+    // 箭头画笔
     private val arrowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.RED
         strokeWidth = 3f
         style = Paint.Style.FILL_AND_STROKE
     }
 
-    // Hint text paint
+    // 提示文字画笔
     private val hintPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.argb(150, 100, 100, 100)
         textSize = 40f
@@ -72,10 +72,10 @@ class MeasureView @JvmOverloads constructor(
     private var currentY = 0f
     private var isTouching = false
 
-    // Threshold: if horizontal movement > vertical, snap to horizontal; otherwise vertical
+    // 阈值：水平移动大于垂直移动时吸附为水平线，否则为垂直线
     private val snapThreshold = 15f
 
-    // Completed measurements that stay on screen
+    // 已完成的测量结果，保留在屏幕上
     data class Measurement(
         val x1: Float, val y1: Float,
         val x2: Float, val y2: Float,
@@ -106,7 +106,7 @@ class MeasureView @JvmOverloads constructor(
                 isTouching = false
                 val dx = abs(currentX - startX)
                 val dy = abs(currentY - startY)
-                // Only save if the movement is meaningful
+                // 仅在移动距离有意义时保存
                 if (dx > snapThreshold || dy > snapThreshold) {
                     val isHorizontal = dx >= dy
                     val endX: Float
@@ -138,7 +138,7 @@ class MeasureView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        // Draw hint if no measurements and not touching
+        // 无测量记录且未触摸时绘制提示
         if (measurements.isEmpty() && !isTouching) {
             canvas.drawText(
                 "Drag your finger to measure pixels",
@@ -151,12 +151,12 @@ class MeasureView @JvmOverloads constructor(
             return
         }
 
-        // Draw all saved measurements
+        // 绘制所有已保存的测量
         for (m in measurements) {
             drawMeasurement(canvas, m.x1, m.y1, m.x2, m.y2, m.pixels, m.isHorizontal)
         }
 
-        // Draw current in-progress measurement
+        // 绘制当前正在进行的测量
         if (isTouching) {
             val dx = abs(currentX - startX)
             val dy = abs(currentY - startY)
@@ -171,13 +171,13 @@ class MeasureView @JvmOverloads constructor(
                     endX = currentX
                     endY = startY
                     pixels = dx.toInt()
-                    // Draw guide line from finger to snapped line
+                    // 绘制从手指到吸附线的引导线
                     canvas.drawLine(currentX, currentY, currentX, startY, guidePaint)
                 } else {
                     endX = startX
                     endY = currentY
                     pixels = dy.toInt()
-                    // Draw guide line from finger to snapped line
+                    // 绘制从手指到吸附线的引导线
                     canvas.drawLine(currentX, currentY, startX, currentY, guidePaint)
                 }
 
@@ -193,18 +193,18 @@ class MeasureView @JvmOverloads constructor(
         pixels: Int,
         isHorizontal: Boolean
     ) {
-        // Draw the main red line
+        // 绘制主红色线条
         canvas.drawLine(x1, y1, x2, y2, linePaint)
 
-        // Draw endpoint dots
+        // 绘制端点圆点
         val dotRadius = 8f
         canvas.drawCircle(x1, y1, dotRadius, dotPaint)
         canvas.drawCircle(x2, y2, dotRadius, dotPaint)
 
-        // Draw arrow heads
+        // 绘制箭头
         drawArrows(canvas, x1, y1, x2, y2, isHorizontal)
 
-        // Draw perpendicular end caps
+        // 绘制垂直端帽
         val capLen = 16f
         if (isHorizontal) {
             canvas.drawLine(x1, y1 - capLen, x1, y1 + capLen, linePaint)
@@ -214,7 +214,7 @@ class MeasureView @JvmOverloads constructor(
             canvas.drawLine(x2 - capLen, y2, x2 + capLen, y2, linePaint)
         }
 
-        // Draw label with background
+        // 绘制带背景的标签
         val label = "${pixels} px"
         val textWidth = textPaint.measureText(label)
         val textX: Float
@@ -229,7 +229,7 @@ class MeasureView @JvmOverloads constructor(
             textY = (y1 + y2) / 2f
         }
 
-        // Draw white background behind text
+        // 绘制文字后面的白色背景
         val textBounds = android.graphics.Rect()
         textPaint.getTextBounds(label, 0, label.length, textBounds)
         canvas.drawRoundRect(
@@ -255,14 +255,14 @@ class MeasureView @JvmOverloads constructor(
 
         if (isHorizontal) {
             val dir = if (x2 > x1) 1f else -1f
-            // Arrow at end point
+            // 终点箭头
             path.moveTo(x2, y2)
             path.lineTo(x2 - dir * arrowSize, y2 - arrowSize / 2)
             path.lineTo(x2 - dir * arrowSize, y2 + arrowSize / 2)
             path.close()
             canvas.drawPath(path, arrowPaint)
 
-            // Arrow at start point
+            // 起点箭头
             path.reset()
             path.moveTo(x1, y1)
             path.lineTo(x1 + dir * arrowSize, y1 - arrowSize / 2)
@@ -271,14 +271,14 @@ class MeasureView @JvmOverloads constructor(
             canvas.drawPath(path, arrowPaint)
         } else {
             val dir = if (y2 > y1) 1f else -1f
-            // Arrow at end point
+            // 终点箭头
             path.moveTo(x2, y2)
             path.lineTo(x2 - arrowSize / 2, y2 - dir * arrowSize)
             path.lineTo(x2 + arrowSize / 2, y2 - dir * arrowSize)
             path.close()
             canvas.drawPath(path, arrowPaint)
 
-            // Arrow at start point
+            // 起点箭头
             path.reset()
             path.moveTo(x1, y1)
             path.lineTo(x1 - arrowSize / 2, y1 + dir * arrowSize)

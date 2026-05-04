@@ -17,14 +17,14 @@ class MainActivity : AppCompatActivity() {
         val root = FrameLayout(this)
         root.setBackgroundColor(0xFFFFFFFF.toInt())
 
-        // The measurement canvas
+        // 测量画布
         val measureView = MeasureView(this)
         root.addView(measureView, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         ))
 
-        // Top bar with screen info and clear button
+        // 顶部栏：显示屏幕信息和清除按钮
         val topBar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(root)
 
-        // Hide system UI for full-screen measuring
+        // 隐藏系统UI以实现全屏测量
         window.decorView.systemUiVisibility = (
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
