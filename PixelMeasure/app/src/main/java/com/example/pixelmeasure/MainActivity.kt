@@ -3,6 +3,8 @@ package com.example.pixelmeasure
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -30,6 +32,13 @@ class MainActivity : AppCompatActivity() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(32, 16, 32, 16)
             setBackgroundColor(0xEEF5F5F5.toInt())
+        }
+
+        // 适配状态栏高度，避免被遮挡
+        ViewCompat.setOnApplyWindowInsetsListener(topBar) { view, insets ->
+            val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.setPadding(32, statusBarHeight + 16, 32, 16)
+            insets
         }
 
         val display = resources.displayMetrics

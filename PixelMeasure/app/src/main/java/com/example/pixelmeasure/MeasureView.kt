@@ -83,7 +83,7 @@ class MeasureView @JvmOverloads constructor(
         val isHorizontal: Boolean
     )
 
-    private val measurements = mutableListOf<Measurement>()
+    private var lastMeasurement: Measurement? = null
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
@@ -121,7 +121,7 @@ class MeasureView @JvmOverloads constructor(
                         endY = currentY
                         pixels = dy.toInt()
                     }
-                    measurements.add(Measurement(startX, startY, endX, endY, pixels, isHorizontal))
+                    lastMeasurement = Measurement(startX, startY, endX, endY, pixels, isHorizontal)
                 }
                 invalidate()
                 return true
@@ -131,7 +131,7 @@ class MeasureView @JvmOverloads constructor(
     }
 
     fun clearMeasurements() {
-        measurements.clear()
+        lastMeasurement = null
         invalidate()
     }
 
@@ -139,7 +139,7 @@ class MeasureView @JvmOverloads constructor(
         super.onDraw(canvas)
 
         // 无测量记录且未触摸时绘制提示
-        if (measurements.isEmpty() && !isTouching) {
+        if (lastMeasurement == null && !isTouching) {
             canvas.drawText(
                 "Drag your finger to measure pixels",
                 width / 2f, height / 2f - 30f, hintPaint
@@ -151,8 +151,8 @@ class MeasureView @JvmOverloads constructor(
             return
         }
 
-        // 绘制所有已保存的测量
-        for (m in measurements) {
+        // 绘制上一次保存的测量
+        lastMeasurement?.let { m ->
             drawMeasurement(canvas, m.x1, m.y1, m.x2, m.y2, m.pixels, m.isHorizontal)
         }
 
